@@ -1,6 +1,7 @@
 import express from "express";
 import middleware from "./middleware";
 import routes from "./routes";
+import { globalErrorHandler } from "./middleware/error.middleware";
 
 export const app = express();
 
@@ -8,3 +9,5 @@ export const app = express();
 middleware(app);
 // All routes
 routes(app);
+// Global error handler
+app.use(globalErrorHandler);
