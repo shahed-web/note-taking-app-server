@@ -7,7 +7,7 @@ export const AUTH_MESSAGES = {
     LOGIN: {
         SUCCESS: "Login successful",
         FAILED: "Login failed",
-        USER_NOT_FOUND: "User not found"
+        INVALID_CREDENTIALS: "Invalid email or password"
     },
     LOGOUT: {
         SUCCESS: "Logout successful",

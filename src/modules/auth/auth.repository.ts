@@ -6,6 +6,11 @@ export class AuthRepository {
         return user;
     }
 
+    async existingUserWithPassword(email: string) {
+        const user = await User.findOne({ email }).select("+password");
+        return user;
+    }
+
     async createUser(data: { name: string; email: string; password: string }) {
         const user = await User.create(data);
         return user;
