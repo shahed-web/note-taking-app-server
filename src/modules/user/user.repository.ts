@@ -1,7 +1,13 @@
 import { Types } from "mongoose";
-import { User } from "./user.model";
+import {  User } from "./user.model";
+import { CreateUserInput } from "./user.validation";
+import { UpdateUserData } from "./user.types";
 
 export class UserRepository {
+
+    async createUser(data: CreateUserInput) {
+        return await User.create(data);
+    }
 
     async getAllUsers(page: number, limit: number) {
         const skip = (page - 1) * limit;
@@ -72,5 +78,22 @@ export class UserRepository {
               },
           },
       ]);
+    }
+
+    async updateUser(userId: string, data: UpdateUserData) {
+        return await User.findByIdAndUpdate(
+            userId,
+            {
+                $set: data,
+            },
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+    }
+
+    async deleteUser(userId: string) {
+        return await User.findByIdAndDelete(userId);
     }
 }

@@ -59,6 +59,10 @@ export const USER_MESSAGES = {
         SUCCESS: "User with posts retrieved successfully",
         FAILED: "Failed to return user with posts"
     },
+    CREATE : {
+        SUCCESS: "User created successfully",
+        FAILED: "Failed to create user"
+    },
     UPDATE : {
         SUCCESS: "User updated successfully",
         FAILED: "Failed to update user"
