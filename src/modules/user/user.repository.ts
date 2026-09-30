@@ -63,21 +63,26 @@ export class UserRepository {
     }
 
     async getUserWithPosts(userId: string) {
-      return await User.aggregate([
-          {
-              $match: {
-                  _id: new Types.ObjectId(userId),
-              },
-          },
-          {
-              $lookup: {
-                  from: "posts",
-                  localField: "_id",
-                  foreignField: "author",
-                  as: "posts",
-              },
-          },
-      ]);
+        return await User.aggregate([
+            {
+             $match: {
+                _id: new Types.ObjectId(userId),
+            },
+            },
+            {
+             $project: {
+                password: 0,
+            },
+            },
+            {
+                $lookup: {
+                    from: "posts",
+                    localField: "_id",
+                    foreignField: "author",
+                    as: "posts",
+                },
+            },
+        ]);
     }
 
     async updateUser(userId: string, data: UpdateUserData) {
