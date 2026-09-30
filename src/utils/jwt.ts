@@ -1,13 +1,9 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import crypto from "crypto";
-
+import { TokenPayload } from "../modules/auth/auth.types";
+import crypto from "node:crypto"
 
 type TokenType = "access" | "refresh";
 
-interface TokenPayload {
-  sub: string;
-  role: string;
-}
 
 const getSecret = (type: TokenType): string => {
   const secret =
