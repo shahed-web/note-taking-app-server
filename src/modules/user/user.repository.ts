@@ -2,6 +2,30 @@ import { Types } from "mongoose";
 import { User } from "./user.model";
 
 export class UserRepository {
+
+    async getAllUsers(page: number, limit: number) {
+        const skip = (page - 1) * limit;
+            const [users, total] = await Promise.all([
+                User.find()
+                .select("-password")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+
+                User.countDocuments(),
+            ]);
+
+            return {
+                users,
+                pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                },
+            };
+    }
+
     async findUserById(userId: string) {
         const user = await User.findById(userId)
         return user

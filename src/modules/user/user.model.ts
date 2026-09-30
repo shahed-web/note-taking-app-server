@@ -50,4 +50,5 @@ const userSchema = new Schema<IUser>(
   }
 );
 
+userSchema.index({ createdAt: -1 });
 export const User = model<IUser>("User", userSchema);

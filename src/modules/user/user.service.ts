@@ -2,6 +2,10 @@ import { UserRepository } from "./user.repository";
 
 const repository = new UserRepository()
 export class UserService {
+    async getAllUsers(page: number, limit: number) {
+        return await repository.getAllUsers(page, limit)
+    }
+
     async groupUserByInterest() {
         return await repository.groupUsersByInterests()
     }
