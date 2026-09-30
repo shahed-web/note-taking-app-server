@@ -574,4 +574,4 @@ The application was developed incrementally with API and database behavior teste
 
 ## License
 
-This project was created as a technical interview assignment.
+This project was created as a technical interview assignment.  
