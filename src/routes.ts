@@ -8,7 +8,7 @@ export default async (app: Application) => {
 
     // all routes starting point will be here
     app.use("/api/auth", authRoutes);
-    app.use("/api/notes", [authMiddleware.authenticate, authMiddleware.authorizeRoles("admin")], noteRoutes);
+    app.use("/api/notes", [authMiddleware.authenticate, authMiddleware.authorizeRoles("admin", "user")], noteRoutes);
     
 
 

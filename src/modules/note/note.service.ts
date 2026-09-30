@@ -9,9 +9,9 @@ export class NoteService {
         return note;
     }
     
-    async getUserNotes(owner: Types.ObjectId) {
-        const notes = await repository.getUserNotes(owner);
-        return notes;
+    async getUserNotes(owner: Types.ObjectId, page: number, limit: number) {
+        const data = await repository.getUserNotes(owner, page, limit);
+        return data;
     }
 
     async getNoteById(noteId: string, owner: Types.ObjectId) {

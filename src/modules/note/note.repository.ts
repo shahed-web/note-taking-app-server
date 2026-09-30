@@ -7,8 +7,27 @@ export class NoteRepository {
         return await Note.create(data);
     }
 
-    async getUserNotes(owner: Types.ObjectId) {
-      return await Note.find({ owner }).sort({ createdAt: -1 });
+    async getUserNotes(owner: Types.ObjectId, page: number, limit: number) {
+        const skip = (page - 1) * limit;
+
+        const [notes, total] = await Promise.all([
+            Note.find({owner})
+                .sort({createdAt: -1})
+                .skip(skip)
+                .limit(limit),
+
+            Note.countDocuments({owner})
+        ])
+        
+        return {
+            notes,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        }
     };
     
     async getNoteById(noteId: string, owner: Types.ObjectId) {

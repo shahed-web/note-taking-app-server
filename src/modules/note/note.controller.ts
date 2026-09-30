@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { NoteService } from "./note.service";
-import { createNoteSchema, updateNoteSchema } from "./note.validation";
+import { createNoteSchema, paginationSchema, updateNoteSchema } from "./note.validation";
 import { NOTE_MESSAGES } from "../../constant/message";
 
 const noteService = new NoteService();
@@ -23,12 +23,14 @@ export class NoteController {
 
     async getAllNotesByUserHandler(req: Request, res: Response, next: NextFunction) {
         try {
-            const notes = await noteService.getUserNotes(req.user._id);
+            const { page, limit } = paginationSchema.parse(req.query);
+            const {notes, pagination} = await noteService.getUserNotes(req.user._id, page, limit);
 
             res.status(200).json({
                 success: true,
                 message: NOTE_MESSAGES.GET.SUCCESS,
-                data: notes
+                data: notes,
+                pagination
             })
         }catch(error) {
             next(error)
