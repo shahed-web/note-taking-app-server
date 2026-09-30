@@ -1,4 +1,6 @@
 import jwt, { SignOptions } from "jsonwebtoken";
+import crypto from "crypto";
+
 
 type TokenType = "access" | "refresh";
 
@@ -65,4 +67,11 @@ export const verifyAccessToken = <T extends object>(token: string): T => {
 
 export const verifyRefreshToken = <T extends object>(token: string): T => {
   return verifyToken<T>(token, "refresh");
+};
+
+export const hashToken = (token: string): string => {
+    return crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
 };

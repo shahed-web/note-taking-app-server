@@ -1,8 +1,9 @@
 import { AUTH_MESSAGES } from "../../constant/message";
 import { AlreadyExistsError, UnauthorizedError } from "../../utils/app-error";
-import { generateAccessToken, generateRefreshToken } from "../../utils/jwt";
+import { generateAccessToken, generateRefreshToken, hashToken, verifyRefreshToken } from "../../utils/jwt";
 import { hashPassword, validatePassword } from "../../utils/password";
 import { AuthRepository } from "./auth.repository";
+import { RefreshTokenPayload } from "./auth.types";
 import { LoginInput, RegisterInput } from "./auth.validation";
 
 const repository = new AuthRepository();
@@ -47,7 +48,24 @@ export class AuthService {
         };
 
         const accessToken = generateAccessToken(tokenPayload);
-        const refreshToken = generateRefreshToken(tokenPayload);
+        const refreshToken = generateRefreshToken(tokenPayload); 
+        const tokenHash = hashToken(refreshToken);
+
+        const expirationInSeconds = parseInt(
+            process.env.DB_TOKEN_EXPIRATION_IN_SECONDS || "604800000",
+            10
+        );
+
+        const expiresAt = new Date(
+            Date.now() + expirationInSeconds * 1000
+        );
+
+        await repository.createRefreshToken(
+            tokenHash, 
+            user._id.toString(), 
+            expiresAt
+        );
+        
         return {
             accessToken,
             refreshToken,
@@ -58,5 +76,25 @@ export class AuthService {
                 role: user.role,
             },
         };
+    }
+
+    async refreshAccessToken(refreshToken: string) {
+        const payload = verifyRefreshToken<RefreshTokenPayload>(refreshToken);
+        const tokenHash = hashToken(refreshToken);
+        const storedToken = await repository.storedRefreshToken(tokenHash, payload.sub);
+
+        if (!storedToken) {
+            throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.EXPIRED);
+        }
+
+        if (storedToken!.expiresAt.getTime() <= Date.now()) {
+            await repository.deleteRefreshToken(storedToken!._id.toString());
+
+            throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.EXPIRED);
+        }
+
+        const accessToken = generateAccessToken({ sub: payload.sub, role: payload.role });
+
+        return accessToken;
     }
 }

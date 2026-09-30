@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { loginSchema, registerSchema } from "./auth.validation";
 import { AuthService } from "./auth.service";
 import { AUTH_MESSAGES } from "../../constant/message";
+import { UnauthorizedError } from "../../utils/app-error";
 
 
 const authService = new AuthService();
@@ -28,7 +29,7 @@ export class AuthController {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000,
+                maxAge: 30 * 60 * 1000,
             });
             
             res.status(200).json({
@@ -37,6 +38,23 @@ export class AuthController {
               data: { accessToken, user },
             });
         }catch(error) {
+            next(error);
+        }
+    }
+
+    async refreshToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const refreshToken = req.cookies.refreshToken;
+            if(!refreshToken) {
+                throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.INVALID_SESSION);
+            }
+            const accessToken = await authService.refreshAccessToken(refreshToken);
+            res.status(200).json({
+                success: true,
+                message: AUTH_MESSAGES.AUTHORIZE.SUCCESS,
+                data: { accessToken },
+            });
+        } catch (error) {
             next(error);
         }
     }
