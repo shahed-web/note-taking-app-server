@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AUTH_MESSAGES, USER_MESSAGES } from "../constant/message";
-import { UnauthorizedError } from "../utils/app-error";
+import { ForbiddenError, UnauthorizedError } from "../utils/app-error";
 import { verifyAccessToken } from "../utils/jwt";
 import { TokenPayload } from "../modules/auth/auth.types";
 import { UserRepository } from "../modules/user/user.repository";
@@ -55,4 +55,17 @@ export class AuthMiddleware {
             next(error)
         }
     }
+
+    authorizeRoles(...allowedRoles: string[]) {
+        return (req: Request, res: Response, next: NextFunction):void => {
+            if(!allowedRoles.includes(req.user.role)) {
+                return next(
+                    new ForbiddenError()
+                )
+            }
+            next()
+        }
+    }
+
+
 }
