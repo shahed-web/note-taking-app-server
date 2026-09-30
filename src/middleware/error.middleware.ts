@@ -24,7 +24,7 @@ export const globalErrorHandler = (
     });
   }
 
-  if (err.code === "P2002") {
+  if (err.code === "11000") {
     return res.status(400).json({
       success: false,
       message: "Duplicate field value",
