@@ -22,12 +22,19 @@ export class AuthController {
     async login(req: Request, res: Response, next: NextFunction) {
         const validateData = loginSchema.parse(req.body);
         try{
-            const result = await authService.loginUser(validateData);
+            const {accessToken, refreshToken, user} = await authService.loginUser(validateData);
+            
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
             
             res.status(200).json({
               success: true,
-              message: "Login successful",
-              data: result,
+              message: AUTH_MESSAGES.LOGIN.SUCCESS,
+              data: { accessToken, user },
             });
         }catch(error) {
             next(error);
