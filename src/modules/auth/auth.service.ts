@@ -83,23 +83,75 @@ export class AuthService {
         await repository.deleteByTokenHash(tokenHash);
     }
 
+    // async refreshAccessToken(refreshToken: string) {
+    //     const payload = verifyRefreshToken<RefreshTokenPayload>(refreshToken);
+    //     const tokenHash = hashToken(refreshToken);
+    //     const storedToken = await repository.storedRefreshToken(tokenHash, payload.sub);
+
+    //     if (!storedToken) {
+    //         throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.EXPIRED);
+    //     }
+
+    //     if (storedToken!.expiresAt.getTime() <= Date.now()) {
+    //         await repository.deleteRefreshToken(storedToken!._id.toString());
+
+    //         throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.EXPIRED);
+    //     }
+
+    //     const accessToken = generateAccessToken({ sub: payload.sub, role: payload.role });
+
+    //     return accessToken;
+    // }
+
     async refreshAccessToken(refreshToken: string) {
         const payload = verifyRefreshToken<RefreshTokenPayload>(refreshToken);
+
         const tokenHash = hashToken(refreshToken);
-        const storedToken = await repository.storedRefreshToken(tokenHash, payload.sub);
+
+        const storedToken = await repository.storedRefreshToken(
+            tokenHash,
+            payload.sub
+        );
 
         if (!storedToken) {
-            throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.EXPIRED);
+            throw new UnauthorizedError(
+                AUTH_MESSAGES.AUTHORIZE.EXPIRED
+            );
         }
 
-        if (storedToken!.expiresAt.getTime() <= Date.now()) {
-            await repository.deleteRefreshToken(storedToken!._id.toString());
+        if (storedToken.expiresAt.getTime() <= Date.now()) {
+            await repository.deleteRefreshToken(
+                storedToken._id.toString()
+            );
 
-            throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.EXPIRED);
+            throw new UnauthorizedError(
+                AUTH_MESSAGES.AUTHORIZE.EXPIRED
+            );
         }
 
-        const accessToken = generateAccessToken({ sub: payload.sub, role: payload.role });
+        const accessToken = generateAccessToken({
+            sub: payload.sub,
+            role: payload.role,
+        });
 
-        return accessToken;
+        const user = await repository.existingUserById(
+            payload.sub
+        );
+
+        if (!user) {
+            throw new UnauthorizedError(
+                AUTH_MESSAGES.AUTHORIZE.INVALID_SESSION
+            );
+        }
+
+        return {
+            accessToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
+        };
     }
 }

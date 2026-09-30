@@ -75,11 +75,11 @@ export class AuthController {
             if(!refreshToken) {
                 throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.INVALID_SESSION);
             }
-            const accessToken = await authService.refreshAccessToken(refreshToken);
+            const {accessToken, user} = await authService.refreshAccessToken(refreshToken);
             res.status(200).json({
                 success: true,
                 message: AUTH_MESSAGES.AUTHORIZE.SUCCESS,
-                data: { accessToken },
+                data: { accessToken, user },
             });
         } catch (error) {
             next(error);

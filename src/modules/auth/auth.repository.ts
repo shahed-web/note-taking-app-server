@@ -12,6 +12,10 @@ export class AuthRepository {
         return user;
     }
 
+    async existingUserById(userId: string) {
+      return await User.findById(userId);
+    }
+
     async createUser(data: { name: string; email: string; password: string }) {
         const user = await User.create(data);
         return user;

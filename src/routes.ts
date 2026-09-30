@@ -19,7 +19,7 @@ export default async (app: Application) => {
 
 
     // test route
-    app.use("/health", (_req, res) => {
+    app.use("/api/health", (_req, res) => {
         res.status(200).json({
             success: true,
             message: "Server is healthy",
