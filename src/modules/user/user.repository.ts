@@ -5,4 +5,29 @@ export class UserRepository {
         const user = await User.findById(userId)
         return user
     }
+
+    async groupUsersByInterests() {
+        return await User.aggregate([
+            {
+             $unwind: "$interests",
+            },
+            {
+             $group: {
+                _id: "$interests",
+                users: {
+                    $push: {
+                        id: "$_id",
+                        name: "$name",
+                        email: "$email",
+                    },
+                },
+              },
+            },
+            {
+              $sort: {
+                _id: 1,
+              },
+            },
+         ]);
+        }
 }

@@ -50,6 +50,4 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-userSchema.index({ interests: 1 });
-
 export const User = model<IUser>("User", userSchema);

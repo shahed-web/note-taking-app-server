@@ -50,6 +50,11 @@ export const USER_MESSAGES = {
         FAILED: "Failed to retrieve user",
         NOT_FOUND: "User not found"
     },
+    GROUP : {
+        SUCCESS: "User grouped by interest successfully",
+        FAILED: "Failed to group user",
+        NOT_FOUND: "User not found"
+    },
     UPDATE : {
         SUCCESS: "User updated successfully",
         FAILED: "Failed to update user"
