@@ -32,6 +32,10 @@ const noteSchema = new Schema<INote>(
   }
 );
 
+// for user query
 noteSchema.index({ owner: 1, createdAt: -1 });
+
+// this index needed for admin query
+noteSchema.index({ createdAt: -1 });
 
 export const Note = model<INote>("Note", noteSchema);

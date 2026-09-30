@@ -78,6 +78,11 @@ export class AuthService {
         };
     }
 
+    async logout(refreshToken: string) {
+        const tokenHash = hashToken(refreshToken);
+        await repository.deleteByTokenHash(tokenHash);
+    }
+
     async refreshAccessToken(refreshToken: string) {
         const payload = verifyRefreshToken<RefreshTokenPayload>(refreshToken);
         const tokenHash = hashToken(refreshToken);

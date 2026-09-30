@@ -64,4 +64,27 @@ export class NoteRepository {
       return note; 
     }
 
+    async getAllNotes(page: number, limit: number) {
+        const skip = (page - 1) * limit;
+
+        const [notes, total] = await Promise.all([
+            Note.find()
+            .populate("owner", "name email")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit),
+
+            Note.countDocuments(),
+        ]);
+
+        return {
+            notes,
+            pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+            },
+        };
+    }
 }   

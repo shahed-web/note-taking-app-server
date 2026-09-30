@@ -37,6 +37,26 @@ export class NoteController {
         }
     }
 
+    async getAllNotesHandler(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const { page, limit } = paginationSchema.parse(req.query);
+
+            const result = await noteService.getAllNotes(page, limit);
+
+            res.status(200).json({
+                success: true,
+                message: NOTE_MESSAGES.GET.SUCCESS,
+                data: result.notes,
+                pagination: result.pagination,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
     async getNoteByIdHandler(req: Request<{id: string}, {}, {}>, res: Response, next: NextFunction) {
         try {
             const note = await noteService.getNoteById(req.params.id, req.user._id)

@@ -28,5 +28,9 @@ export class NoteService {
         const deletedNote = await repository.deleteNote(noteId, owner);
         return deletedNote;
     }
+    
+    async getAllNotes(page: number, limit: number) {
+      return await repository.getAllNotes(page, limit);
+    }
 }
 

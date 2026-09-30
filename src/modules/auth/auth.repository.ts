@@ -28,4 +28,8 @@ export class AuthRepository {
     async deleteRefreshToken(tokenId: string) {
         return await RefreshToken.deleteOne({ _id: tokenId });
     }
+
+    async deleteByTokenHash(tokenHash: string) {
+     return await RefreshToken.deleteOne({ tokenHash });
+    }
 }

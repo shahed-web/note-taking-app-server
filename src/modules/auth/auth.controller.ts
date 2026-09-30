@@ -42,6 +42,33 @@ export class AuthController {
         }
     }
 
+    async logoutHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ) {
+        try {
+            const refreshToken = req.cookies?.refreshToken;
+
+            if (refreshToken) {
+             await authService.logout(refreshToken);
+            }
+
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+            });
+
+            res.status(200).json({
+                success: true,
+                message: AUTH_MESSAGES.LOGOUT.SUCCESS,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async refreshToken(req: Request, res: Response, next: NextFunction) {
         try {
             const refreshToken = req.cookies.refreshToken;
