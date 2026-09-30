@@ -17,4 +17,18 @@ export class UserController {
             next(error)
         }
     }
+
+    async getUserWithPosts(req: Request<{id: string}, {}, {}>, res: Response, next: NextFunction) {
+        try {
+            const user = await userService.getUserWithPost(req.params.id)
+   
+            res.status(200).json({
+                success: true,
+                message: USER_MESSAGES.POST.SUCCESS,
+                data: user
+            })
+        } catch(error) {
+            next(error)
+        }
+    }
  }

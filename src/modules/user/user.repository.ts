@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { User } from "./user.model";
 
 export class UserRepository {
@@ -29,5 +30,23 @@ export class UserRepository {
               },
             },
          ]);
-        }
+    }
+
+    async getUserWithPosts(userId: string) {
+      return await User.aggregate([
+          {
+              $match: {
+                  _id: new Types.ObjectId(userId),
+              },
+          },
+          {
+              $lookup: {
+                  from: "posts",
+                  localField: "_id",
+                  foreignField: "author",
+                  as: "posts",
+              },
+          },
+      ]);
+    }
 }
